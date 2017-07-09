@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/upload.css">
+    <script src="/static/upload.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', uploadApp);
+    </script>
+  </head>
+  <body>
+    <div id="container">
+
+      <section id="info">
+        <h4 class="section-head">Info</h4>
+        <div class="section-body">
+        </div>
+      </section>
+
+      <section id="error">
+        <h4 class="section-head">Error</h4>
+        <div class="section-body">
+        </div>
+      </section>
+
+      <section id="progress">
+        <h4 class="section-head">Upload Progress</h4>
+        <div class="section-body">
+          <div class="row">Please wait for the upload to complete.</div>
+          <div class="row" id="progress-bar"></div>
+        </div>
+      </section>
+
+      <section id="upload">
+        <h4 class="section-head">Upload New File</h4>
+        <div class="section-body">
+          <form id="upload-form" autocomplete="off">
+            <div class="row">
+              <label for="file-input">
+                Select a file:<br>
+                <span id="file-size-limit" class="small"></span>
+              </label>
+              <input type="file" id="file-input" name="user-file" required>
+              <span id="file-input-error">(input error)</span>
+            </div>
+            <div class="row">
+              <label for="expiry-time">Delete file after:</label>
+              <select id="expiry-time" name="valid-for">
+                <option value="0">Never</option>
+                <option value="30" selected>30 Days</option>
+                <option value="90">90 Days</option>
+              </select>
+            </div>
+            <div class="row">
+              <label for="private-checkbox">File access requires log-in:</label>
+              <input type="checkbox" id="private-checkbox" name="make-private" value="1">
+            </div>
+            <div class="row">
+              <input type="submit" id="submit-button" value="Do Upload">
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="overview">
+        <h4 class="section-head">Overview Uploaded Files</h4>
+        <div class="section-body">
+          <div class="row">
+            <table id="file-table">
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>Link</th>
+                  <th>Available Until</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div id="empty-table">
+              You don't have any uploaded files.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </body>
+</html>

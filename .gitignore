@@ -1,0 +1,3 @@
+*.pyc
+flask-app/database.sqlite3
+flask-app/py-venv
