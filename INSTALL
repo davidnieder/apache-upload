@@ -1,0 +1,28 @@
+Setup
+
+Software needed
+* apache 2.2/2.4 with mod_wsgi
+* python2 and virtualenv
+
+Setup steps
+* clone repository
+* create virtualenv and install flask
+  (app.wsgi assumes virtualenv is flask-app/py-venv)
+  > cd apache-upload/flask-app
+  > virtualenv py-venv
+  > py-venv/bin/pip install -r requirements.txt
+* create database
+  > py-venv/bin/python
+  > from app import database
+  > database.create()
+* httpd needs write access to database file and folder
+  > chown www-data flask-app
+  > chown www-data flask-app/database.sqlite3
+* httpd needs write access to /prv and /pup
+  > chown www-data doc-root/{prv,pup}
+* setup apache vhost
+  (adjust paths, servername, authprovider in apache config)
+  > cp vhost-apache-2.4.conf /etc/apache2/sites-available/apache-upload
+  > a2ensite apache-upload
+  > apachectl restart
+

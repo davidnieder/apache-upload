@@ -1,0 +1,19 @@
+About
+=====
+
+apache-upload lets users upload files to the webserver.
+For each file a random URL is generated which can be shared.
+Uploads can either be private and require a valid log-in or be accessible by everyone.
+Apache's mod_auth* is used for user authentication.
+Uploads and their URLs can expire after some set period.
+
+File upload is handled by flask (python) but serving is done by apache directly
+and does not go through the wsgi process which improves performance noticeable.
+
+TODO
+====
+
+* script to remove uploads after their 'validfor' period
+* file overview for adminstrators
+* script that checks if database is consistent with filesystem contents
+* install script
