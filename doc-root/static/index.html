@@ -6,7 +6,9 @@
     <link rel="stylesheet" type="text/css" href="/static/upload.css">
     <script src="/static/upload.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', uploadApp);
+      document.addEventListener('DOMContentLoaded', () => {
+        uploadApp(false);
+      });
     </script>
   </head>
   <body>

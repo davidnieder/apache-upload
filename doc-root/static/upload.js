@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var env;
 
 var build_url = function(fileInfo)  {
@@ -12,11 +12,11 @@ var build_url = function(fileInfo)  {
   return url;
 };
 
-var widgets = (function() {
+var widgets = function() {
     var info = (function()  {
-      var $container = document.getElementById('info');
-      var $header = $container.querySelector('.section-head');
-      var $body = $container.querySelector('.section-body');
+      var $container = document.getElementById('info'),
+        $header = $container.querySelector('.section-head'),
+        $body = $container.querySelector('.section-body');
 
       return  {
         show: function() {
@@ -34,7 +34,7 @@ var widgets = (function() {
         uploadSuccessful: function(fileUrl)  {
           $body.innerHTML = '' +
             '<div class="row">' +
-            'Your file was successfully uploaded! It\'s new url is:' +
+            'Your file was successfully uploaded! It\'s url is:' +
             '</div>' +
             '<div class="row">' +
             '<input class="urlfield" type="text" value="' + fileUrl + '">' +
@@ -44,8 +44,8 @@ var widgets = (function() {
     })();
 
     var error = (function() {
-      var $container = document.getElementById('error');
-      var $body = $container.querySelector('.section-body');
+      var $container = document.getElementById('error'),
+        $body = $container.querySelector('.section-body');
 
       return  {
         show: function() {
@@ -67,7 +67,7 @@ var widgets = (function() {
 
     var progress = (function() {
       var progressSegment = document.getElementById('progress'),
-      progressBar = document.getElementById('progress-bar');
+        progressBar = document.getElementById('progress-bar');
 
       return  {
         show: function() {
@@ -90,8 +90,8 @@ var widgets = (function() {
 
     var fileForm = (function()  {
       var container = document.getElementById('upload'),
-      uploadForm = document.getElementById('upload-form'),
-      fileInput = document.getElementById('file-input'),
+        uploadForm = document.getElementById('upload-form'),
+        fileInput = document.getElementById('file-input'),
         submitBtn = document.getElementById('submit-button'),
         fileError = document.getElementById('file-input-error');
 
@@ -130,7 +130,7 @@ var widgets = (function() {
         fileInfo['url'] = build_url(fileInfo);
         info.uploadSuccessful(fileInfo['url']);
         info.show();
-        fileOverview.addFile(fileInfo, true);
+        fileOverview.addRow(fileInfo, false, true);
         uploadForm.reset();
       };
 
@@ -214,6 +214,9 @@ var widgets = (function() {
                 info.setText('The file "' + fileInfo.filename +
                     '" was removed from the server.');
                 info.show();
+                var row = tableBody.querySelector('tr[data-row-for="' +
+                  fileInfo.uuid + '"]');
+                tableBody.removeChild(row);
               } else {
                 error.setText('Deleting file failed.', 'unkown error');
                 error.show();
@@ -226,24 +229,15 @@ var widgets = (function() {
         };
         xhr.open('DELETE', endpoint);
         xhr.send();
-
-        var row = tableBody.querySelector('tr[data-row-for="' + fileInfo.uuid + '"]');
-        tableBody.removeChild(row);
       };
 
-      var addFile = function(fileInfo, prepend)  {
+      var addRow = function(fileInfo, adminView, prependRow)  {
         var row = document.createElement('tr');
-        var cell = document.createElement('td');
+        var cell;
 
-        cell.appendChild(document.createTextNode(fileInfo['filename']));
-        row.appendChild(cell);
-
-        var link = document.createElement('a');
-        link.setAttribute('href', fileInfo['url']);
-        link.appendChild(document.createTextNode(fileInfo['url']));
-        cell = document.createElement('td');
-        cell.appendChild(link);
-        row.appendChild(cell);
+        var fileLink = document.createElement('a');
+        fileLink.setAttribute('href', fileInfo['url']);
+        fileLink.appendChild(document.createTextNode(fileInfo['filename']));
 
         var validFor = 'forever';
         if (typeof fileInfo['validfor'] === 'number' && fileInfo['validfor'] > 0) {
@@ -251,20 +245,47 @@ var widgets = (function() {
           var days = fileInfo['validfor']*24*60*60*1000;
           validFor = (new Date(uploadTime + days)).toLocaleDateString();
         }
-        cell = document.createElement('td');
-        cell.appendChild(document.createTextNode(validFor));
-        row.appendChild(cell);
 
         var deleteLink = document.createElement('a');
         deleteLink.setAttribute('href', '#');
-        deleteLink.addEventListener('click', (ev) => { onDeleteLinkClick(ev, fileInfo); });
         deleteLink.appendChild(document.createTextNode('delete'));
+        deleteLink.addEventListener('click', (ev) => {
+          onDeleteLinkClick(ev, fileInfo); });
+
+        if (adminView)  {
+          cell = document.createElement('td');
+          cell.appendChild(fileLink)
+          row.appendChild(cell);
+
+          cell = document.createElement('td');
+          cell.appendChild(document.createTextNode(fileInfo['username']));
+          row.appendChild(cell);
+
+          cell = document.createElement('td');
+          cell.appendChild(document.createTextNode(validFor));
+          row.appendChild(cell);
+
+        } else {
+          cell = document.createElement('td');
+          cell.appendChild(document.createTextNode(fileInfo['filename']));
+          row.appendChild(cell);
+
+          cell = document.createElement('td');
+          cell.appendChild(fileLink);
+          row.appendChild(cell);
+
+          cell = document.createElement('td');
+          cell.appendChild(document.createTextNode(validFor));
+          row.appendChild(cell);
+
+        }
         cell = document.createElement('td');
         cell.appendChild(deleteLink);
         row.appendChild(cell);
+
         row.setAttribute('data-row-for', fileInfo['uuid']);
 
-        if (prepend === true && tableBody.firstChild !== null) {
+        if (prependRow === true && tableBody.firstChild !== null) {
           tableBody.insertBefore(row, tableBody.firstChild);
         } else {
           tableBody.appendChild(row);
@@ -276,17 +297,17 @@ var widgets = (function() {
         }
       };
 
-      var init = function() {
-        for (var i=0; i<env.userFiles.length; i++)  {
-          env.userFiles[i]['url'] = build_url(env.userFiles[i]);
-          addFile(env.userFiles[i]);
-        }
+      var init = function(adminView) {
+        env.files.forEach(function(fileInfo)  {
+          fileInfo['url'] = build_url(fileInfo);
+          addRow(fileInfo, adminView, false);
+        });
         container.style.display = 'block';
       };
 
       return {
         init: init,
-        addFile: addFile
+        addRow: addRow
       };
     })();
 
@@ -297,11 +318,10 @@ var widgets = (function() {
       fileForm: fileForm,
       fileOverview: fileOverview
     };
-});
+};
 
-var uploadApp = (function() {
+var uploadApp = function(admin) {
   widgets = widgets();
-
   widgets.info.setText('Loading &hellip;');
   widgets.info.show();
 
@@ -311,14 +331,20 @@ var uploadApp = (function() {
       widgets.info.hide();
       if (xhr.status === 200) {
         env = JSON.parse(xhr.responseText);
-        widgets.fileForm.init();
-        widgets.fileOverview.init();
+        if (!admin) {
+          widgets.fileForm.init();
+        }
+        widgets.fileOverview.init(admin);
       } else {
         widgets.error.setText('Could not initialize application', xhr.responseText);
         widgets.error.show();
       }
     }
   };
-  xhr.open('GET', '/app/jsenv');
+  if (admin)  {
+    xhr.open('GET', '/app/admin');
+  } else {
+    xhr.open('GET', '/app/jsenv');
+  }
   xhr.send();
-});
+};

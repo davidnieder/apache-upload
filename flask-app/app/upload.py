@@ -6,8 +6,7 @@ import os
 import uuid
 from time import time
 
-from flask import Flask, render_template, request, make_response, g
-from flask import redirect, jsonify, abort, url_for
+from flask import Flask, request, make_response, g, jsonify, url_for
 from jinja2.filters import do_filesizeformat as filesizeformat
 from werkzeug.utils import secure_filename
 
@@ -68,7 +67,16 @@ def jsenv():
                 'bytes': app.config['MAX_CONTENT_LENGTH'],
                 'humanReadable': filesizeformat(app.config['MAX_CONTENT_LENGTH'], True)
             },
-            userFiles = files)
+            files = files)
+
+@app.route('/admin')
+def admin():
+    files = database.get_all_entries()
+    return jsonify(
+            endpoints = {
+                'delete': url_for('admin_delete')
+                },
+            files = files)
 
 @app.route('/upload', methods=['POST'])
 def handle_upload():
@@ -113,14 +121,25 @@ def delete_file():
     file_id = request.args.get('fileid', '')
     user_file = database.get_entry(file_id)
     if user_file and user_file['username'] == request.remote_user:
-        database.remove_entry(file_id)
-
-        os.unlink(build_file_path(user_file))
-        os.rmdir(build_dir_path(user_file))
-
+        remove_file(user_file)
         return jsonify(success=True)
     else:
         return jsonify(success=False)
+
+@app.route('/admin/delete', methods=['DELETE'])
+def admin_delete():
+    file_id = request.args.get('fileid', '')
+    user_file = database.get_entry(file_id)
+    if user_file:
+        remove_file(user_file)
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False)
+
+def remove_file(user_file):
+    database.remove_entry(user_file['uuid'])
+    os.unlink(build_file_path(user_file))
+    os.rmdir(build_dir_path(user_file))
 
 def build_dir_path(user_file):
     if user_file['is_private']:

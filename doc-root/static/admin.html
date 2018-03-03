@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/upload.css">
+    <script src="/static/upload.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        uploadApp(true);
+      });
+    </script>
+  </head>
+  <body>
+    <div id="container">
+
+      <section id="info">
+        <h4 class="section-head">Info</h4>
+        <div class="section-body">
+        </div>
+      </section>
+
+      <section id="error">
+        <h4 class="section-head">Error</h4>
+        <div class="section-body">
+        </div>
+      </section>
+
+      <section id="overview">
+        <h4 class="section-head">Admin - Overview Uploaded Files</h4>
+        <div class="section-body">
+          <div class="row">
+            <table id="file-table">
+              <thead>
+                <tr>
+                  <th>Filename</th>
+                  <th>User</th>
+                  <th>Available Until</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+            <div id="empty-table">
+              No files in the database.
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </body>
+</html>
