@@ -267,10 +267,6 @@ var widgets = function() {
 
         } else {
           cell = document.createElement('td');
-          cell.appendChild(document.createTextNode(fileInfo['filename']));
-          row.appendChild(cell);
-
-          cell = document.createElement('td');
           cell.appendChild(fileLink);
           row.appendChild(cell);
 
