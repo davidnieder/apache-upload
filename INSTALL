@@ -25,4 +25,5 @@ Setup steps
   > cp vhost-apache-2.4.conf /etc/apache2/sites-available/apache-upload
   > a2ensite apache-upload
   > apachectl restart
-
+* setup cronjob for rm-expired-files.py, eg:
+  "@daily py-venv/bin/python rm-expired-files.py"

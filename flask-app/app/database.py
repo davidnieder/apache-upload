@@ -39,13 +39,21 @@ def remove_entry(uuid):
 def get_user_entries(username):
     con = connect()
     cur = con.cursor()
-    cur.execute('SELECT * FROM urls WHERE user=? ORDER BY timestamp DESC', (username, ))
+    cur.execute('SELECT * FROM urls WHERE user=? ORDER BY timestamp DESC',
+                (username, ))
     return cur.fetchall()
 
 def get_all_entries():
     con = connect()
     cur = con.cursor()
     cur.execute('SELECT * FROM urls ORDER BY timestamp DESC')
+    return cur.fetchall()
+
+def get_expired_entries():
+    con = connect()
+    cur = con.cursor()
+    cur.execute('SELECT * FROM urls WHERE (timestamp + validfor*24*60*60) < ?',
+                (int(time()),))
     return cur.fetchall()
 
 def convert_results(cur, row):

@@ -13,7 +13,5 @@ and does not go through the wsgi process which improves performance noticeable.
 TODO
 ====
 
-* script to remove uploads after their 'validfor' period
-* file overview for adminstrators
 * script that checks if database is consistent with filesystem contents
 * install script
