@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import sqlite3
 from time import time
 from flask import g
@@ -8,7 +6,7 @@ from .config import Config
 
 
 def connect():
-    if hasattr(g, 'db'):
+    if g and hasattr(g, 'db'):
         return g.db
     else:
         con = sqlite3.connect(Config.DATABASE)

@@ -8,7 +8,7 @@ Apache's mod_auth* is used for user authentication.
 Uploads and their URLs can expire after some set period.
 
 File upload is handled by flask (python) but serving is done by apache directly
-and does not go through the wsgi process which improves performance noticeable.
+and does not go through the wsgi process which improves performance noticeably.
 
 TODO
 ====

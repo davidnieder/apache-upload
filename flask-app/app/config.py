@@ -1,17 +1,14 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
 from os import path
 
 
 class Config(object):
     DEBUG = False
-    MAX_CONTENT_LENGTH = 100 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 1000 * 1024 * 1024
 
     DATABASE = ''
 
-    PATH_PUP = ''
-    PATH_PRV = ''
+    PATH_PUP = '/mnt/ex01/apache-upload-docroot/pup'
+    PATH_PRV = '/mnt/ex01/apache-upload-docroot/prv'
 
 
 # set paths dynamic if they are left empty above

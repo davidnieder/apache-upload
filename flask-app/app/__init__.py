@@ -1,1 +1,1 @@
-from upload import app
+from .upload import app

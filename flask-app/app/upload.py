@@ -1,7 +1,3 @@
-# -*- coding: utf-8 -*-
-
-from __future__ import unicode_literals
-
 import os
 import uuid
 from time import time
@@ -10,7 +6,7 @@ from flask import Flask, request, make_response, g, jsonify, url_for
 from jinja2.filters import do_filesizeformat as filesizeformat
 from werkzeug.utils import secure_filename
 
-import database
+from . import database
 from .config import Config
 
 
@@ -29,7 +25,7 @@ def check_diskspace():
     statvfs = os.statvfs(Config.PATH_PUP)
     size = statvfs.f_frsize * statvfs.f_blocks
     free = statvfs.f_frsize * statvfs.f_bavail
-    if free/size > 0.2:
+    if free/size < 0.2:
         return make_response(('error: low disk space, yo', 500, []))
 
 @app.before_request
@@ -49,7 +45,7 @@ def db_close(error):
 
 @app.errorhandler(413)
 def payload_too_large(error):
-    return make_response(('file to large', 413, []))
+    return make_response(('file too large', 413, []))
 
 @app.route('/')
 def test():
@@ -73,9 +69,7 @@ def jsenv():
 def admin():
     files = database.get_all_entries()
     return jsonify(
-            endpoints = {
-                'delete': url_for('admin_delete')
-                },
+            endpoints = {'delete': url_for('admin_delete')},
             files = files)
 
 @app.route('/upload', methods=['POST'])
@@ -89,7 +83,7 @@ def handle_upload():
 
     if user_file:
         filename = secure_filename(user_file.filename)
-        hex_id = uuid.uuid4().get_hex()
+        hex_id = uuid.uuid4().hex
 
         if request.form.get('make-private', False):
             is_private = True
@@ -99,7 +93,7 @@ def handle_upload():
             path = os.path.join(Config.PATH_PUP, hex_id)
 
         fullpath = os.path.join(path, filename)
-        os.mkdir(path, 0751)
+        os.mkdir(path, 0o751)
         user_file.save(fullpath)
 
         timestamp = int(time())
